@@ -1,10 +1,11 @@
-#include <Arduino.h>
-#include <TFT_eSPI.h>
+#include "esp_timer.h"
+#include "u8g2_esp32_hal.h"
 #include "UI.h"
 #include "UI/Waveform.h"
-#include "UI/Palette.h"
+#include "esp_log.h"
 #include "UI/GraphicEqualiser.h"
-#include "UI/Spectrogram.h"
+static const char *TAG = "UI";
+
 
 // Task to process samples
 void drawing_task(void *param)
@@ -22,16 +23,14 @@ void drawing_task(void *param)
   }
 }
 
-UI::UI(TFT_eSPI &display, int window_size) : m_display(display)
+UI::UI(u8g2_t &display, int window_size) : m_display(display)
 {
-  Serial.printf("Display is %d x %d\n", display.width(), display.height());
-  m_palette = new Palette();
-  m_waveform = new Waveform(display, 0, 0, display.width(), display.height(), window_size);
-  m_graphic_equaliser = new GraphicEqualiser(m_palette, 0, 0, display.width(), display.height(), window_size);
-  m_spectrogram = new Spectrogram(m_palette, 0, 0, display.width(), display.height());
+  ESP_LOGI(TAG,"Display is %d x %d\n", display.width, display.height);
+  m_waveform = new Waveform(display, 0, 0, display.width, display.height, window_size);
+  m_graphic_equaliser = new GraphicEqualiser(0, 0, display.width, display.height, window_size);
   // start off with the spectrogram hidden
   m_waveform->visible = true;
-  m_spectrogram->visible = false;
+
   m_graphic_equaliser->visible = false;
   // create a drawing task to update our UI
   xTaskCreatePinnedToCore(drawing_task, "Drawing Task", 4096, this, 1, &m_draw_task_handle, 1);
@@ -40,8 +39,7 @@ UI::UI(TFT_eSPI &display, int window_size) : m_display(display)
 void UI::toggle_display()
 {
   bool tmp = m_graphic_equaliser->visible;
-  m_graphic_equaliser->visible = m_spectrogram->visible;
-  m_spectrogram->visible = m_waveform->visible;
+  m_graphic_equaliser->visible = m_waveform->visible;
   m_waveform->visible = tmp;
 }
 
@@ -49,7 +47,7 @@ void UI::update(float *samples, float *fft)
 {
   m_waveform->update(samples);
   m_graphic_equaliser->update(fft);
-  m_spectrogram->update(fft);
+
   xTaskNotify(m_draw_task_handle, 1, eIncrement);
 }
 
@@ -57,16 +55,16 @@ unsigned long draw_time = 0;
 int draw_count = 0;
 void UI::draw()
 {
-  auto start = millis();
-  m_spectrogram->draw(m_display);
+  auto start = esp_timer_get_time()/1000;
+
   m_graphic_equaliser->draw(m_display);
   m_waveform->draw(m_display);
-  auto end = millis();
+  auto end = esp_timer_get_time()/1000;
   draw_time += end - start;
   draw_count++;
   if (draw_count == 20)
   {
-    Serial.printf("Drawing time %ld\n", draw_time / 20);
+    ESP_LOGI(TAG, "Drawing time %ld\n", draw_time / 20);
     draw_count = 0;
     draw_time = 0;
   }

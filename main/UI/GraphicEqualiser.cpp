@@ -1,14 +1,14 @@
-#include <Arduino.h>
+
 #include <algorithm>
-#include <TFT_eSPI.h>
-#include "Palette.h"
+#include "u8g2_esp32_hal.h"
+
 #include "GraphicEqualiser.h"
 
 #undef min
 
-GraphicEqualiser::GraphicEqualiser(Palette *palette, int x, int y, int width, int height, int num_bins) : Component(x, y, width, height)
+GraphicEqualiser::GraphicEqualiser(int x, int y, int width, int height, int num_bins) : Component(x, y, width, height)
 {
-  m_palette = palette;
+
   m_num_bins = num_bins;
   bar_chart = static_cast<float *>(malloc(sizeof(float) * num_bins));
   for (int i = 0; i < num_bins; i++)
@@ -46,7 +46,7 @@ void GraphicEqualiser::update(float *mag)
   }
 }
 
-void GraphicEqualiser::_draw(TFT_eSPI &display)
+void GraphicEqualiser::_draw(u8g2_t &display)
 {
   int x = 0;
   int x_step = int(width / (m_num_bins / 16));
@@ -66,10 +66,10 @@ void GraphicEqualiser::_draw(TFT_eSPI &display)
     }
     ave /= 4;
     int peak_value = std::min(height, int(0.5f * ave));
-    display.fillRect(x, 0, x_step, height - bar_value - 1, 0);
-    display.drawLine(x, height - peak_value - 1, x + x_step - 1, height - peak_value - 1, m_palette->get_color(135 + peak_value));
-    display.fillRect(x, height - bar_value - 1, x_step - 1, bar_value, m_palette->get_color(135 + bar_value));
+    u8g2_DrawBox(&display, x, 0, x_step, height - bar_value - 1);
+    u8g2_DrawLine(&display, x, height - peak_value - 1, x + x_step - 1, height - peak_value - 1);
+    u8g2_DrawBox(&display, x, height - bar_value - 1, x_step - 1, bar_value);
     x += x_step;
   }
-  display.fillRect(x, 0, width - x, height, 0);
+  u8g2_DrawBox(&display, x, 0, width - x, height);
 }

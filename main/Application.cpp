@@ -1,8 +1,8 @@
-#include <TFT_eSPI.h>
+#include <u8g2_esp32_hal.h>
 #include "Application.h"
 #include "I2SSampler.h"
 #include "I2SMEMSSampler.h"
-#include "ADCSampler.h"
+
 #include "UI/UI.h"
 #include "Processor.h"
 #include "config.h"
@@ -18,7 +18,7 @@ void processing_task(void *param)
   }
 }
 
-Application::Application(TFT_eSPI &display)
+Application::Application(u8g2_t &display)
 {
   m_window_size = WINDOW_SIZE;
   m_sample_buffer = (int16_t *)malloc(sizeof(int16_t) * WINDOW_SIZE);
@@ -29,7 +29,7 @@ Application::Application(TFT_eSPI &display)
 #else
   m_sampler = new ADCSampler(ADC_UNIT_1, ADC_MIC_CHANNEL, i2s_adc_config);
 #endif
-  pinMode(GPIO_BUTTON, INPUT_PULLUP);
+  //pinMode(GPIO_BUTTON, INPUT_PULLUP);
 }
 
 void Application::begin()
@@ -52,10 +52,10 @@ void Application::process_samples()
 
 void Application::loop()
 {
-  if (digitalRead(GPIO_BUTTON) == 0)
+  /*if (digitalRead(GPIO_BUTTON) == 0)
   {
     m_ui->toggle_display();
     // delay to allow for the touch to finish
     vTaskDelay(pdMS_TO_TICKS(500));
-  }
+  }*/
 }

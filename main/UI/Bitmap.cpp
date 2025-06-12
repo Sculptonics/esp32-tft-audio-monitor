@@ -1,4 +1,4 @@
-#include "Arduino.h"
+#include <cstring>
 #include "Bitmap.h"
 
 Bitmap::Bitmap(int width, int height)

@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <driver/i2s.h>
@@ -5,7 +6,7 @@
 class UI;
 class Processor;
 class I2SSampler;
-class TFT_eSPI;
+class U8G2;
 
 class Application
 {
@@ -19,7 +20,7 @@ private:
   void process_samples();
 
 public:
-  Application(TFT_eSPI &display);
+  Application(u8g2_t &display);
   void begin();
   void loop();
 
