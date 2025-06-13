@@ -16,12 +16,14 @@ void Waveform::update(const float *samples)
 
 void Waveform::_draw(u8g2_t &display)
 {
+  u8g2_ClearBuffer(&display);
   float x = 0;
   float x_step = (float)width / (float)m_num_samples;
-  u8g2_DrawBox(&display, x, y, width, height);
+  //u8g2_DrawBox(&display, x, y, width, height);
   for (int i = 4; i < m_num_samples; i += 4)
   {
     u8g2_DrawLine(&display, x, height / 2 + m_samples[i - 4] * 3, x + x_step * 4, height / 2 + m_samples[i] * 3);
     x += x_step * 4;
   }
+  u8g2_SendBuffer(&display);
 }

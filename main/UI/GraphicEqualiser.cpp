@@ -48,6 +48,7 @@ void GraphicEqualiser::update(float *mag)
 
 void GraphicEqualiser::_draw(u8g2_t &display)
 {
+  u8g2_ClearBuffer(&display);
   int x = 0;
   int x_step = int(width / (m_num_bins / 16));
   for (int i = 2; i < m_num_bins / 4; i += 4)
@@ -66,10 +67,11 @@ void GraphicEqualiser::_draw(u8g2_t &display)
     }
     ave /= 4;
     int peak_value = std::min(height, int(0.5f * ave));
-    u8g2_DrawBox(&display, x, 0, x_step, height - bar_value - 1);
+    //u8g2_DrawBox(&display, x, 0, x_step, height - bar_value - 1);
     u8g2_DrawLine(&display, x, height - peak_value - 1, x + x_step - 1, height - peak_value - 1);
     u8g2_DrawBox(&display, x, height - bar_value - 1, x_step - 1, bar_value);
     x += x_step;
   }
-  u8g2_DrawBox(&display, x, 0, width - x, height);
+  //u8g2_DrawBox(&display, x, 0, width - x, height);
+  u8g2_SendBuffer(&display);
 }

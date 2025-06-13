@@ -64,7 +64,7 @@ void UI::draw()
   draw_count++;
   if (draw_count == 20)
   {
-    ESP_LOGI(TAG, "Drawing time %ld\n", draw_time / 20);
+    ESP_LOGI(TAG, "Drawing time %ld", draw_time / 20);
     draw_count = 0;
     draw_time = 0;
   }
