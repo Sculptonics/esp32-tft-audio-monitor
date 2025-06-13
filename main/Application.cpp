@@ -2,11 +2,11 @@
 #include "Application.h"
 #include "I2SSampler.h"
 #include "I2SMEMSSampler.h"
-
+#include "esp_log.h"
 #include "UI/UI.h"
 #include "Processor.h"
 #include "config.h"
-
+static const char *TAG = "app";
 // Task to process samples
 void processing_task(void *param)
 {
@@ -34,12 +34,11 @@ Application::Application(u8g2_t &display)
 
 void Application::begin()
 {
-  // set up the processing
   TaskHandle_t processing_task_handle;
-  xTaskCreatePinnedToCore(processing_task, "Processing Task", 4096, this, 2, &processing_task_handle, 0);
-
   // start sampling from i2s device
   m_sampler->start();
+  // set up the processing
+  xTaskCreatePinnedToCore(processing_task, "Processing Task", 4096, this, 2, &processing_task_handle, 0);
 }
 
 void Application::process_samples()

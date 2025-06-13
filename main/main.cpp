@@ -1,7 +1,8 @@
 
 #include "u8g2_esp32_hal.h"
 #include "Application.h"
-
+#include "esp_log.h"
+static const char *TAG = "main";
 Application *application;
 u8g2_t u8g2;
 #define PIN_SDA             GPIO_NUM_5
@@ -36,5 +37,6 @@ extern "C" void app_main() {
   // service the application
   while(1){
     application->loop();
+    vTaskDelay( 10 / portTICK_PERIOD_MS);
   }
 }
