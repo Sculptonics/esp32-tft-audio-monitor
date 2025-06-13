@@ -31,7 +31,7 @@ UI::UI(u8g2_t &display, int window_size) : m_display(display)
   // start off with the spectrogram hidden
   m_waveform->visible = true;
 
-  m_graphic_equaliser->visible = false;
+  m_graphic_equaliser->visible = true;
   // create a drawing task to update our UI
   xTaskCreatePinnedToCore(drawing_task, "Drawing Task", 4096, this, 1, &m_draw_task_handle, 1);
 }
@@ -47,7 +47,6 @@ void UI::update(float *samples, float *fft)
 {
   m_waveform->update(samples);
   m_graphic_equaliser->update(fft);
-
   xTaskNotify(m_draw_task_handle, 1, eIncrement);
 }
 
@@ -56,9 +55,10 @@ int draw_count = 0;
 void UI::draw()
 {
   auto start = esp_timer_get_time()/1000;
-
+  u8g2_ClearBuffer(&m_display);
   m_graphic_equaliser->draw(m_display);
   m_waveform->draw(m_display);
+  u8g2_SendBuffer(&m_display);
   auto end = esp_timer_get_time()/1000;
   draw_time += end - start;
   draw_count++;
