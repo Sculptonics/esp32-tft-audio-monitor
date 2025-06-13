@@ -4,6 +4,7 @@
 #include "UI/Waveform.h"
 #include "esp_log.h"
 #include "UI/GraphicEqualiser.h"
+#include "config.h"
 static const char *TAG = "UI";
 
 
@@ -27,7 +28,7 @@ UI::UI(u8g2_t &display, int window_size) : m_display(display)
 {
   ESP_LOGI(TAG,"Display is %d x %d\n", display.width, display.height);
   m_waveform = new Waveform(display, 0, 0, display.width, display.height, window_size);
-  m_graphic_equaliser = new GraphicEqualiser(0, 0, display.width, display.height, window_size);
+  m_graphic_equaliser = new GraphicEqualiser(0, 0, display.width, display.height, window_size, BAND_NUM, PART_OF_RANGE);
   // start off with the spectrogram hidden
   m_waveform->visible = true;
 

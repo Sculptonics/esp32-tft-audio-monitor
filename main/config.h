@@ -34,3 +34,9 @@ extern i2s_config_t i2s_adc_config;
 extern i2s_config_t i2s_mic_Config;
 // i2s microphone pins
 extern i2s_pin_config_t i2s_mic_pins;
+
+// Количество столбцов
+#define BAND_NUM 32
+
+// Деление всего диапазона частот
+#define PART_OF_RANGE 1
